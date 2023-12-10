@@ -8,7 +8,6 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import SidebarChat from "./sidebarChat";
 import db from "./firebase";
 import {
-  getFirestore,
   collection,
   onSnapshot,
   DocumentData,

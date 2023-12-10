@@ -6,16 +6,29 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { InsertEmoticon } from "@mui/icons-material";
 import { Mic } from "@mui/icons-material";
+import { useParams } from "react-router-dom";
+import { onSnapshot, doc } from "firebase/firestore";
+import db from "./firebase";
 
 const Chat = () => {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const { roomId } = useParams();
+
+  useEffect(() => {
+    if (roomId) {
+      onSnapshot(doc(db, "rooms", roomId), (snapshot) => {
+        setRoomName(snapshot.data()?.name);
+      });
+    }
+  }, [roomId]);
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000).toString());
-  }, []);
+  }, [roomId]);
 
-  const sendMessage = (e) => {
+  const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
 
     console.log("you typed >>> ", input);
@@ -31,7 +44,7 @@ const Chat = () => {
         />
 
         <div className="chat__headerInfo">
-          <h3>Room name</h3>
+          <h3>{roomName}</h3>
           <p>Last seen at...</p>
         </div>
 
