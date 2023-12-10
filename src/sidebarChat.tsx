@@ -3,12 +3,11 @@ import "./SidebarChat.css";
 import { Avatar } from "@mui/material";
 import { SidebarProps } from "./sidebar.type";
 import db from "./firebase";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { Link, useParams } from "react-router-dom";
+import { addDoc, collection} from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 const SidebarChat = (props: SidebarProps) => {
   const [seed, setSeed] = useState("");
-  const { roomId } = useParams();
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000).toString());
