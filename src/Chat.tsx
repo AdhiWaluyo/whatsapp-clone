@@ -19,6 +19,8 @@ const Chat = () => {
     e.preventDefault();
 
     console.log("you typed >>> ", input);
+
+    setInput("");
   };
 
   return (
