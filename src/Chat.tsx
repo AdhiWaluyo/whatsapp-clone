@@ -14,9 +14,11 @@ import {
   query,
   orderBy,
   Timestamp,
+  addDoc,
 } from "firebase/firestore";
 
 import db from "./firebase";
+import { useStateValue } from "./stateProvider";
 
 interface Message {
   name: string;
@@ -29,6 +31,7 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [roomName, setRoomName] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [{ user }] = useStateValue();
   const { roomId } = useParams();
 
   useEffect(() => {
@@ -56,6 +59,18 @@ const Chat = () => {
     e.preventDefault();
 
     console.log("you typed >>> ", input);
+
+    if (roomId) {
+      const messagesCollection = collection(db, "rooms", roomId, "messages");
+
+      addDoc(messagesCollection, {
+        name: user?.name,
+        content: input,
+        createdAt: Timestamp.fromDate(new Date()),
+      });
+    } else {
+      console.error("roomId is undefined");
+    }
 
     setInput("");
   };
@@ -87,26 +102,26 @@ const Chat = () => {
       <div className="chat__body">
         {messages.map((message, index) => (
           <p
-            className={`chat__message ${true && "chat__receiver"}`}
+            className={`chat__message ${
+              message.name === user?.name && "chat__receiver"
+            }`}
             key={index}
           >
             <span className="chat__name">{message.name}</span>
             {message.content}
             <span className="chat__timestamp">
               {message.createdAt &&
-                `${new Date(
-                  message.createdAt.toMillis()
-                ).getHours()}:${new Date(
-                  message.createdAt.toMillis()
-                ).getMinutes()}`}
+                `${new Date(message.createdAt.toMillis()).toLocaleTimeString(
+                  "en-US",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }
+                )}`}
             </span>
           </p>
         ))}
-        <p className={`chat__message ${true && "chat__receiver"}`}>
-          <span className="chat__name">udin</span>
-          sadad
-          <span className="chat__timestamp">19:00</span>
-        </p>
       </div>
       <div className="chat__footer">
         <InsertEmoticon />
