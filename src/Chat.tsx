@@ -84,7 +84,16 @@ const Chat = () => {
 
         <div className="chat__headerInfo">
           <h3>{roomName}</h3>
-          <p>Last seen at...</p>
+          <p>
+            Last seen at...{""}
+            {new Date(
+              messages[messages.length - 1]?.createdAt.toMillis()
+            ).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
+          </p>
         </div>
 
         <div className="chat__headerRight">
