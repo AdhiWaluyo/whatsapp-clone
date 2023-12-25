@@ -2,6 +2,7 @@
 export interface User {
 	id: string;
 	name: string;
+	photoURL: string;
 	// Add any other properties as needed
 }
 
@@ -17,7 +18,7 @@ export interface SetUserAction {
 }
 
 export const initialState = {
-  user: null,
+	user: null,
 };
 
 

@@ -7,11 +7,8 @@ import { Avatar, IconButton } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import SidebarChat from "./sidebarChat";
 import db from "./firebase";
-import {
-  collection,
-  onSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { collection, onSnapshot, DocumentData } from "firebase/firestore";
+import { useStateValue } from "./stateProvider";
 
 interface Room {
   id: string;
@@ -20,6 +17,7 @@ interface Room {
 
 const Sidebar = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "rooms"), (snapshot) => {
@@ -38,7 +36,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar />
+        <Avatar src={user?.photoURL} />
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLargeIcon />

@@ -13,13 +13,14 @@ const Login = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // Ensure result.user has the expected structure
-        const { uid, displayName } = result.user || {};
+        const { uid, displayName, photoURL } = result.user || {};
         if (uid && displayName) {
           dispatch({
             type: actionTypes.SET_USER,
             user: {
               id: uid,
               name: displayName,
+              photoURL: photoURL || "",
             },
           });
         } else {
