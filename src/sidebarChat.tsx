@@ -3,11 +3,37 @@ import "./SidebarChat.css";
 import { Avatar } from "@mui/material";
 import { SidebarProps } from "./sidebar.type";
 import db from "./firebase";
-import { addDoc, collection} from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { Link } from "react-router-dom";
+
+interface Message {
+  name: string;
+  content: string;
+  createdAt: Timestamp;
+}
 
 const SidebarChat = (props: SidebarProps) => {
   const [seed, setSeed] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (props.id) {
+      const q = query(
+        collection(db, "rooms", props.id, "messages"),
+        orderBy("createdAt", "desc")
+      );
+
+      onSnapshot(q, (snapshot) => {
+        setMessages(snapshot.docs.map((doc) => doc.data() as Message));
+      });
+    }
+  }, [props.id]);
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000).toString());
@@ -34,7 +60,7 @@ const SidebarChat = (props: SidebarProps) => {
         />
         <div className="sidebarChat__info">
           <h2>{props.name}</h2>
-          <p>Last message...</p>
+          <p>{messages[0]?.content}</p>
         </div>
       </div>
     </Link>
