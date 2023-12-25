@@ -7,13 +7,28 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { InsertEmoticon } from "@mui/icons-material";
 import { Mic } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import { onSnapshot, doc } from "firebase/firestore";
+import {
+  onSnapshot,
+  doc,
+  collection,
+  query,
+  orderBy,
+  Timestamp,
+} from "firebase/firestore";
+
 import db from "./firebase";
+
+interface Message {
+  name: string;
+  content: string;
+  createdAt: Timestamp;
+}
 
 const Chat = () => {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const { roomId } = useParams();
 
   useEffect(() => {
@@ -21,6 +36,15 @@ const Chat = () => {
       onSnapshot(doc(db, "rooms", roomId), (snapshot) => {
         setRoomName(snapshot.data()?.name);
       });
+
+      const q = query(
+        collection(db, "rooms", roomId, "messages"),
+        orderBy("createdAt", "asc")
+      );
+
+      onSnapshot(q, (snapshot) =>
+        setMessages(snapshot.docs.map((doc) => doc.data() as Message))
+      );
     }
   }, [roomId]);
 
@@ -61,6 +85,23 @@ const Chat = () => {
         </div>
       </div>
       <div className="chat__body">
+        {messages.map((message, index) => (
+          <p
+            className={`chat__message ${true && "chat__receiver"}`}
+            key={index}
+          >
+            <span className="chat__name">{message.name}</span>
+            {message.content}
+            <span className="chat__timestamp">
+              {message.createdAt &&
+                `${new Date(
+                  message.createdAt.toMillis()
+                ).getHours()}:${new Date(
+                  message.createdAt.toMillis()
+                ).getMinutes()}`}
+            </span>
+          </p>
+        ))}
         <p className={`chat__message ${true && "chat__receiver"}`}>
           <span className="chat__name">udin</span>
           sadad
